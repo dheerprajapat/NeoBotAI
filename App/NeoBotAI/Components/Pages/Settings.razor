@@ -1,0 +1,43 @@
+﻿@page "/settings"
+
+<div style="padding: 15px;">
+    @foreach(var settingItem in AppSettings.Instance.SettingItems)
+    {
+        switch (settingItem.SettingType)
+        {
+            case SettingType.Username:
+                <div class="setting-item" style="padding-top: 4px;padding-bottom: 3px;">
+                    <div style="display:flex;flex-direction: column;width: 100vw;">
+                        <span><b>@settingItem.Text</b></span>
+
+                        <ion-input placeholder="username" @oninput="UpdateUserName" value="@settingItem.Value" />
+                        
+                    </div>
+                </div>
+                break;
+            case SettingType.Temperature:
+                <div class="setting-item" style="padding-top: 4px;padding-bottom: 3px;">
+                    <div style="display:flex;flex-direction: column;width: 100vw;">
+                        <span><b>@settingItem.Text</b></span>
+                        <span style="margin-top: 8px;font-size: 16px;">@settingItem.Value</span>
+                        
+                        <RangeSlider Max="1" Min="0" Step="0.1" Value="@Convert.ToDecimal(settingItem.Value)" ValueChanged="OnSliderValueChanged" />
+                    </div>
+                </div>
+                break;
+        }
+    }
+</div>
+
+<style>
+    .setting-item {
+        border-bottom: 1px solid #c2bdbd;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+</style>
+
+

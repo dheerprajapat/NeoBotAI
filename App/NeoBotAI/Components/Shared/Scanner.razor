@@ -1,0 +1,19 @@
+﻿@using BlazorQrCodeScanner
+@using BlazorQrCodeScanner.MediaTrack
+
+<div>
+    <QrCodeScanner @ref="qrScanner" 
+        Style="display: flex; align-items: center; justify-content: center; overflow: hidden !important;" 
+        Width="100%" Height="calc(100vh - 112px)" 
+        OnCreated="OnScannerCreated" OnScannerStarted="OnScanStarted" OnQrSuccess="OnQrCodeScanned">
+        @if (isScannerStarted)
+        {
+            <div id="highlightFrame" style="position: fixed; z-index: 2; width: 100vw; height: 150px; background-color: transparent; outline: 2px solid yellow;">
+            </div>
+        }
+    </QrCodeScanner>
+
+    <img src="@scannedImage" width="100%" />
+</div>
+
+

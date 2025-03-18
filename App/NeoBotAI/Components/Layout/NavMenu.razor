@@ -1,0 +1,40 @@
+﻿@inject NavigationManager NavManager
+
+<ion-tabs>
+    @foreach(var navMenuItem in navMenuItems)
+    {
+        <ion-tab tab="@navMenuItem.TabName">
+            <div id="@navMenuItem.TabId">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>@navMenuItem.TabName</ion-title>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content style="height:84vh;">
+                    @ChildContent
+                </ion-content>
+            </div>
+        </ion-tab>
+    }
+
+    <ion-tab-bar slot="bottom">
+        @foreach(var navMenuItem in navMenuItems)
+        {
+            <ion-tab-button tab="@navMenuItem.TabName" @onclick="() => GoToPage(navMenuItem.TabLink)">
+                <img src="@navMenuItem.TabIcon" width="30" height="30"/>
+                @navMenuItem.TabName
+            </ion-tab-button>
+        }
+    </ion-tab-bar>
+</ion-tabs>
+
+<style>
+    .example-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+</style>
+
+
