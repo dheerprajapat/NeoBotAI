@@ -6,6 +6,7 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,13 +18,13 @@ public class RagEngine
         {
             try {
 
-
-                List<Document> documents = FileSystemDocumentLoader.loadDocuments("..\\..\\..\\..\\Data\\");
+                var path = ".\\Data\\";
+                List<Document> documents = FileSystemDocumentLoader.loadDocuments(path);
 
                 InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
                 EmbeddingStoreIngestor.ingest(documents, embeddingStore);
 
-                String filePath = "..\\..\\..\\..\\Data\\embeddingStore.json";
+                String filePath = ".\\Embeddings\\embeddingStore.json";
                 embeddingStore.serializeToFile(filePath);
                 //InMemoryEmbeddingStore<TextSegment> deserializedStore = InMemoryEmbeddingStore.fromFile(filePath);
 
