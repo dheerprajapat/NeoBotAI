@@ -30,6 +30,12 @@ public class HomeController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/getActiveSessions")
+    public ResponseEntity<?> getActiveSessions(){
+        var activeSessions = SessionManager.getActiveSessions();
+        return activeSessions.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(activeSessions);
+    }
+
     @PostMapping("/createSession")
     public UUID createSession(@Valid @RequestBody CreateSessionModel createSessionModel)
     {
