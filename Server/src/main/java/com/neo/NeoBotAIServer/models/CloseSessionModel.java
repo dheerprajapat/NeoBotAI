@@ -1,4 +1,4 @@
-package models;
+package com.neo.NeoBotAIServer.models;
 
 public class CloseSessionModel
 {

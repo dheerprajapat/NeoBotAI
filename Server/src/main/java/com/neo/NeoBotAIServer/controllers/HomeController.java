@@ -1,9 +1,9 @@
 package com.neo.NeoBotAIServer.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import rag.RagEngine;
+import com.neo.NeoBotAIServer.models.QueryQuestionModel;
+import com.neo.NeoBotAIServer.rag.RagEngine;
+import org.apache.poi.hslf.record.CString;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -13,5 +13,11 @@ public class HomeController {
     public String home()
     {
         return "Hello";
+    }
+
+    @PostMapping("/chat")
+    public  String chat(@RequestBody QueryQuestionModel message)
+    {
+        return RagEngine.getAssistant().chat(message.getQuestion());
     }
 }

@@ -1,6 +1,6 @@
-package session;
+package com.neo.NeoBotAIServer.session;
 
-import models.CreateSessionModel;
+import com.neo.NeoBotAIServer.models.CreateSessionModel;
 
 import java.util.HashMap;
 import java.util.Map;

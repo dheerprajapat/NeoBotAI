@@ -1,4 +1,4 @@
-package session;
+package com.neo.NeoBotAIServer.session;
 
 import org.apache.catalina.User;
 
