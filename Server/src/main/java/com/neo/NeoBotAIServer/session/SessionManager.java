@@ -29,4 +29,17 @@ public class SessionManager
         else
             return null;
     }
+
+    public static boolean removeSession(String sessionId){
+        try {
+            UUID id = UUID.fromString(sessionId);
+            if (activeSessions.containsKey(id)) {
+                activeSessions.remove(id);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

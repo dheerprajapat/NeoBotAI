@@ -1,20 +1,13 @@
 package com.neo.NeoBotAIServer.models;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
 public class CloseSessionModel
 {
+    @NotNull
+    @NotEmpty
     private String sessionId;
-
-    public CloseSessionModel(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    // Getter
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    // Setter
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
 }

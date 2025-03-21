@@ -1,21 +1,15 @@
 package com.neo.NeoBotAIServer.models;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
 public class CreateSessionModel
 {
+    @NotNull
+    @NotEmpty
     private String vectorDbName;
-
-    public String getVectorDbName() {
-        return vectorDbName;
-    }
-
-    public void setVectorDbName(String vectorDbName) {
-        this.vectorDbName = vectorDbName;
-    }
-
-    public CreateSessionModel(String vectorDbName)
-    {
-        this.vectorDbName = vectorDbName;
-    }
 
 }
 

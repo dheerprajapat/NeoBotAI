@@ -13,6 +13,7 @@ import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import opennlp.tools.parser.Cons;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,6 +91,16 @@ public class RagEngine
                 .build();
 
         return assistant;
+    }
+
+    public static List<String> getDBNames() {
+        String path = ".\\Embeddings\\";
+        try {
+            return Files.list(Path.of(path)).filter(file -> getFileExtension(file.toString()).equals("json"))
+                    .map(file -> file.getFileName().toString()).toList();
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
     }
 
     public static String getFileExtension(String fileName) {

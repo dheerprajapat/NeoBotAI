@@ -4,7 +4,7 @@ import com.neo.NeoBotAIServer.models.CreateSessionModel;
 import com.neo.NeoBotAIServer.models.QueryQuestionModel;
 import com.neo.NeoBotAIServer.rag.RagEngine;
 import com.neo.NeoBotAIServer.session.SessionManager;
-import org.apache.poi.hslf.record.CString;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +21,9 @@ public class HomeController {
     }
 
     @PostMapping("/chat")
-    public ResponseEntity<?> chat(@RequestBody QueryQuestionModel queryQuestionModel)
+    public ResponseEntity<?> chat(@Valid @RequestBody QueryQuestionModel queryQuestionModel)
     {
-        var result = SessionManager.chat(queryQuestionModel.getSessionId(),queryQuestionModel.getQuestion());
+        var result = SessionManager.chat(UUID.fromString(queryQuestionModel.getSessionId()),queryQuestionModel.getQuestion());
         if(result==null)
             return ResponseEntity.badRequest().body("Bad Request, no session  with given id");
 
@@ -31,9 +31,22 @@ public class HomeController {
     }
 
     @PostMapping("/createSession")
-    public UUID createSession(@RequestBody CreateSessionModel createSessionModel)
+    public UUID createSession(@Valid @RequestBody CreateSessionModel createSessionModel)
     {
         var  session = SessionManager.createSession(createSessionModel);
         return  session.getSessionId();
+    }
+
+    @GetMapping("/closeSession/{sessionId}")
+    public ResponseEntity<?> closeSession(@PathVariable String sessionId){
+        var result = SessionManager.removeSession(sessionId);
+        return result ? ResponseEntity.ok("Session closed")
+                : ResponseEntity.badRequest().body("Session not found");
+    }
+
+    @GetMapping("/getDBNames")
+    public ResponseEntity<?> getDBNames(){
+        var dbNames = RagEngine.getDBNames();
+        return dbNames.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dbNames);
     }
 }
