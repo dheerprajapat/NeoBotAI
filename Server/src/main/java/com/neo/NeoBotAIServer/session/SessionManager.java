@@ -10,9 +10,23 @@ public class SessionManager
 {
     private final static Map<UUID,UserSession> activeSessions = new HashMap<>();
 
-    public static  void createSession(CreateSessionModel sessionModel)
+    public static  UserSession createSession(CreateSessionModel sessionModel)
     {
-        var session = new UserSession(UUID.randomUUID(),sessionModel.getVectorDbName());
+        var uuid = UUID.randomUUID();
+
+        if(activeSessions.containsKey(uuid))
+            uuid = UUID.randomUUID();
+
+        var session = new UserSession(uuid,sessionModel.getVectorDbName());
         activeSessions.put(session.getSessionId(),session);
+        return session;
+    }
+
+    public  static  String chat(UUID sessionId,String question)
+    {
+        if(activeSessions.containsKey(sessionId))
+            return activeSessions.get(sessionId).chat(question);
+        else
+            return null;
     }
 }

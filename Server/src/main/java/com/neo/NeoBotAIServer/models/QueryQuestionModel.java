@@ -1,22 +1,21 @@
 package com.neo.NeoBotAIServer.models;
 
+import java.util.UUID;
+
 public class QueryQuestionModel {
-    private String sessionId;
+    private UUID sessionId;
     private String question;
 
     public QueryQuestionModel(String sessionId, String question) {
-        this.sessionId = sessionId;
+        this.sessionId = UUID.fromString(sessionId);
         this.question = question;
     }
 
     // Getters and Setters
-    public String getSessionId() {
+    public UUID getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
 
     public String getQuestion() {
         return question;

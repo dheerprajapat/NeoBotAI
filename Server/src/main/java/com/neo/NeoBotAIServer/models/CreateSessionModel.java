@@ -12,9 +12,9 @@ public class CreateSessionModel
         this.vectorDbName = vectorDbName;
     }
 
-    public CreateSessionModel(String _vectorDbName)
+    public CreateSessionModel(String vectorDbName)
     {
-        vectorDbName = _vectorDbName;
+        this.vectorDbName = vectorDbName;
     }
 
 }

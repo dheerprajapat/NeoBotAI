@@ -16,38 +16,48 @@ import opennlp.tools.parser.Cons;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class RagEngine
 {
-    private static  InMemoryEmbeddingStore<TextSegment> embeddingStore;
+    private static Map<String,InMemoryEmbeddingStore<TextSegment>> embeddingStores;
     private  static  Assistant assistant;
 
     public  static CompletableFuture<Boolean> createVectorDatabase()
     {
         return CompletableFuture.supplyAsync(()->
         {
+            embeddingStores = new HashMap<>();
+
             try {
 
-                String filePath = ".\\Embeddings\\embeddingStore.json";
-
-                if(Files.exists(Path.of(filePath)))
+                for(Path file: Files.list(Paths.get(".\\Data\\")).toArray(Path[]::new))
                 {
-                    embeddingStore = InMemoryEmbeddingStore.fromFile(filePath);
-                    System.out.println("Vector database already exists");
-                    return true;
+                    var name = file.getFileName().toString().replace(getFileExtension(file.getFileName().toString()),"json");
+                    var fileName = ".\\Embeddings\\"+name;
+
+                    if(Files.exists(Path.of(fileName)))
+                    {
+                        embeddingStores.put(name,InMemoryEmbeddingStore.fromFile(fileName));
+                        System.out.println("Vector database already exists: "+fileName);
+                        continue;
+                    }
+
+                    var doc = FileSystemDocumentLoader.loadDocument(file);
+                    var embeddingStore = new InMemoryEmbeddingStore<TextSegment>();
+                    EmbeddingStoreIngestor.ingest(doc,embeddingStore);
+                    embeddingStore.serializeToFile(fileName);
+
+                    embeddingStores.put(name,embeddingStore);
+
+                    System.out.println("Vector database created successfully: "+fileName);
+
+
                 }
-
-                var path = ".\\Data\\";
-                List<Document> documents = FileSystemDocumentLoader.loadDocuments(path);
-
-                embeddingStore = new InMemoryEmbeddingStore<>();
-                EmbeddingStoreIngestor.ingest(documents, embeddingStore);
-
-                embeddingStore.serializeToFile(filePath);
-
-                System.out.println("Vector database created successfully");
 
                 return true;
             }
@@ -59,16 +69,16 @@ public class RagEngine
         });
     }
 
-    public  static Assistant getAssistant()
-    {
-        return  assistant;
-    }
 
-    public  static Assistant createAssistant()
+    public  static Assistant createAssistant(String vectorDbName)
     {
-        if(embeddingStore == null)
+        if(embeddingStores == null)
             return null;
 
+        var embeddingStore = embeddingStores.get(vectorDbName);
+
+        if(embeddingStore == null)
+            return null;
 
         ChatLanguageModel model = OllamaChatModel.builder()
                 .baseUrl("http://localhost:11434")
@@ -80,6 +90,13 @@ public class RagEngine
                 .build();
 
         return assistant;
+    }
+
+    public static String getFileExtension(String fileName) {
+        // Find the last occurrence of '.' in the filename
+        int dotIndex = fileName.lastIndexOf('.');
+        // If '.' is not found, return "No extension", otherwise return the substring after '.'
+        return (dotIndex == -1) ? "No extension" : fileName.substring(dotIndex + 1);
     }
 
 }
