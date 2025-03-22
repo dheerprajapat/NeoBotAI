@@ -2,9 +2,7 @@ package com.neo.NeoBotAIServer.session;
 
 import com.neo.NeoBotAIServer.models.CreateSessionModel;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SessionManager
 {
@@ -28,6 +26,16 @@ public class SessionManager
             return activeSessions.get(sessionId).chat(question);
         else
             return null;
+    }
+
+    public static List<String> getActiveSessions(){
+        List<String> activeSessionsList = new ArrayList<>();
+        if(activeSessions.isEmpty()) return activeSessionsList;
+
+        for(UserSession userSession : activeSessions.values()){
+            activeSessionsList.add(userSession.getSessionId().toString());
+        }
+        return activeSessionsList;
     }
 
     public static boolean removeSession(String sessionId){
