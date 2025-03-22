@@ -4,6 +4,8 @@ import com.neo.NeoBotAIServer.models.Assistant;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -81,12 +83,18 @@ public class RagEngine
         if(embeddingStore == null)
             return null;
 
+        ChatMemory chatMemory = MessageWindowChatMemory.builder()
+                .maxMessages(20)
+                .chatMemoryStore(new PersistentChatMemoryStore())
+                .build();
+
         ChatLanguageModel model = OllamaChatModel.builder()
                 .baseUrl("http://localhost:11434")
                 .modelName("llama3.1:latest").build();
 
         assistant = AiServices.builder(Assistant.class)
                 .chatLanguageModel(model)
+                .chatMemory(chatMemory)
                 .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
                 .build();
 
