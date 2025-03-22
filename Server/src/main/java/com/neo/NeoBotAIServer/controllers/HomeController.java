@@ -4,10 +4,12 @@ import com.neo.NeoBotAIServer.models.CreateSessionModel;
 import com.neo.NeoBotAIServer.models.QueryQuestionModel;
 import com.neo.NeoBotAIServer.rag.RagEngine;
 import com.neo.NeoBotAIServer.session.SessionManager;
+import dev.langchain4j.data.message.ChatMessage;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -54,5 +56,10 @@ public class HomeController {
     public ResponseEntity<?> getDBNames(){
         var dbNames = RagEngine.getDBNames();
         return dbNames.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(dbNames);
+    }
+
+    @GetMapping("/messages/{sessionId}")
+    public String getMessages(@PathVariable String sessionId){
+        return SessionManager.getMessages(sessionId);
     }
 }

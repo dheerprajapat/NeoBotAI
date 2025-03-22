@@ -1,8 +1,13 @@
 package com.neo.NeoBotAIServer.session;
 
 import com.neo.NeoBotAIServer.models.CreateSessionModel;
+import dev.langchain4j.data.message.ChatMessage;
+import org.springframework.http.ResponseEntity;
 
 import java.util.*;
+
+import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJson;
+import static dev.langchain4j.data.message.ChatMessageSerializer.messagesToJson;
 
 public class SessionManager
 {
@@ -15,7 +20,7 @@ public class SessionManager
         if(activeSessions.containsKey(uuid))
             uuid = UUID.randomUUID();
 
-        var session = new UserSession(uuid,sessionModel.vectorDbName());
+        var session = new UserSession(uuid,sessionModel.vectorDbName(),sessionModel.chatHistory());
         activeSessions.put(session.getSessionId(),session);
         return session;
     }
@@ -48,6 +53,18 @@ public class SessionManager
             return false;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static String getMessages(String sessionId) {
+        try {
+            UUID id = UUID.fromString(sessionId);
+            if (activeSessions.containsKey(id)) {
+                return messagesToJson(activeSessions.get(id).getChatMessages());
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
     }
 }

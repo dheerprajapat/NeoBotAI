@@ -1,19 +1,18 @@
 package com.neo.NeoBotAIServer.rag;
 
 import com.neo.NeoBotAIServer.models.Assistant;
-import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
+import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import opennlp.tools.parser.Cons;
+import kotlin.Pair;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import static dev.langchain4j.data.message.ChatMessageDeserializer.messagesFromJson;
 
 public class RagEngine
 {
@@ -73,7 +74,7 @@ public class RagEngine
     }
 
 
-    public  static Assistant createAssistant(String vectorDbName)
+    public  static Pair<Assistant,ChatMemory> createAssistant(String vectorDbName, String history)
     {
         if(embeddingStores == null)
             return null;
@@ -83,10 +84,16 @@ public class RagEngine
         if(embeddingStore == null)
             return null;
 
-        ChatMemory chatMemory = MessageWindowChatMemory.builder()
-                .maxMessages(20)
-                .chatMemoryStore(new PersistentChatMemoryStore())
-                .build();
+        ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(30);
+
+        if(history != null && !history.isEmpty())
+        {
+            for(ChatMessage message:messagesFromJson(history))
+            {
+                chatMemory.add(message);
+            }
+        }
+
 
         ChatLanguageModel model = OllamaChatModel.builder()
                 .baseUrl("http://localhost:11434")
@@ -98,8 +105,10 @@ public class RagEngine
                 .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
                 .build();
 
-        return assistant;
+
+        return new Pair<>(assistant,chatMemory);
     }
+
 
     public static List<String> getDBNames() {
         String path = ".\\Embeddings\\";
