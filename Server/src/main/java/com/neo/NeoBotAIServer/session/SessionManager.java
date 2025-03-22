@@ -17,7 +17,7 @@ public class SessionManager
         if(activeSessions.containsKey(uuid))
             uuid = UUID.randomUUID();
 
-        var session = new UserSession(uuid,sessionModel.getVectorDbName());
+        var session = new UserSession(uuid,sessionModel.vectorDbName());
         activeSessions.put(session.getSessionId(),session);
         return session;
     }

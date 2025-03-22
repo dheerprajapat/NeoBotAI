@@ -23,7 +23,7 @@ public class HomeController {
     @PostMapping("/chat")
     public ResponseEntity<?> chat(@Valid @RequestBody QueryQuestionModel queryQuestionModel)
     {
-        var result = SessionManager.chat(UUID.fromString(queryQuestionModel.getSessionId()),queryQuestionModel.getQuestion());
+        var result = SessionManager.chat(UUID.fromString(queryQuestionModel.sessionId()),queryQuestionModel.question());
         if(result==null)
             return ResponseEntity.badRequest().body("Bad Request, no session  with given id");
 
