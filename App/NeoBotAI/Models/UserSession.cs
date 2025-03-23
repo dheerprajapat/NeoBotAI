@@ -1,23 +1,49 @@
 ﻿using NeoBotAI.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NeoBotAI.Models;
 
 public record UserSession(string Id, AIService AIService)
 {
-    public List<ChatMessage> chatMessages = new List<ChatMessage>();
+    public ObservableCollection<ChatMessage> ChatMessages { get; set; } = new ObservableCollection<ChatMessage>();
 
     public async ValueTask<string?> ChatAsync(string question)
     {
-        return await AIService.ChatAsync(question, Id);
+        var userMessage = ChatMessage.UserMessage(question);
+
+        ChatMessages.Add(userMessage);
+
+        var response =  await AIService.ChatAsync(question, Id);
+
+        if (response==null)
+            return null;
+
+        var aiMessage = ChatMessage.AIMessage(response);
+
+        ChatMessages.Add(aiMessage);
+
+        return response;
     }
 
     public async ValueTask<bool> CloseSession()
     {
         return await AIService.CloseSessionAsync(Id);
+    }
+
+    public void SaveSession()
+    {
+        try
+        {
+        }
+        catch
+        {
+
+        }
     }
 }

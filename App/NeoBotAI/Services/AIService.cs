@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using NeoBotAI.Models;
 
 namespace NeoBotAI.Services;
 
@@ -59,7 +60,8 @@ public class AIService
 
             return null;
         }
-        catch {
+        catch 
+        {
             return null;
         }
     }
