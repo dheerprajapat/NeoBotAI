@@ -1,5 +1,6 @@
 ﻿using BlazorQrCodeScanner.Maui;
 using Microsoft.Extensions.Logging;
+using NeoBotAI.Services;
 
 namespace NeoBotAI;
 
@@ -21,6 +22,8 @@ public static class MauiProgram
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
+
+		builder.Services.AddSingleton<AIService>();
 
 		return builder.Build();
 	}
