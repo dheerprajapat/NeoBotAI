@@ -10,6 +10,19 @@ namespace NeoBotAI.Services;
 
 public class AIService
 {
+
+    private static AIService? instance;
+    public static AIService Instance
+    {
+        get
+        {
+            if(instance==null)
+                instance=new AIService();
+
+            return instance;
+        }
+
+    }
     private static HttpClient httpClient = new HttpClient()
     {
         BaseAddress = new Uri("http://localhost:8080/")
@@ -17,7 +30,7 @@ public class AIService
 
     public AIService()
     {
-
+        instance = this;
     }
 
     public async ValueTask<string?> CreateSessionAsync(string vectorDbName,string chatHistory)

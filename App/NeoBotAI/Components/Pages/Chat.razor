@@ -4,7 +4,7 @@
 
 <div>
     <!-- Prompt Messages Container - Modify the height according to your need -->
-    <div class="flex h-[84vh] w-full flex-col">
+    <div class="flex w-full flex-col" style="height: calc(100vh - 120px)">
         <!-- Prompt Messages -->
         <div class="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7">
 
@@ -19,7 +19,7 @@
                             src="https://dummyimage.com/256x256/354ea1/ffffff&text=G" />
 
                             <div class="flex w-full flex-col items-start lg:flex-row lg:justify-between">
-                                <p class="max-w-3xl @IsLast(chatMessage)">
+                                <p class="max-w-3xl">
                                     @chatMessage.Text
                                 </p>
                                 <div class="mt-4 flex flex-row justify-start gap-x-2 text-slate-500 lg:mt-0">
@@ -133,31 +133,3 @@
 </div>
 
 
-
-<style>
-
-    .text {
-        border-right: 3px solid;
-        animation: blink 1s step-end infinite, type 2.5s steps(29) forwards;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-
-    @@keyframes blink {
-        50%
-
-    {
-        border-color: transparent;
-    }
-
-    }
-
-    @@keyframes type {
-        0%
-
-    {
-        width: 0;
-    }
-
-    }
-</style>

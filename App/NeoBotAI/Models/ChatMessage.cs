@@ -38,16 +38,19 @@ public class ChatMessage
         return new ChatMessage()
         {
             Type = "USER",
-            Contents = [new Content()
+            Contents = new List<Content>()
             {
-                Text = text,
-                Type = "TEXT"
-            }]
+                new Content()
+                {
+                    Text = text,
+                    Type = "TEXT"
+                }
+            }
         };
     }
 
     [JsonIgnore]
-    public MessageRole Role => (Contents == null || Contents.Count == 0)?MessageRole.AI:MessageRole.USER;
+    public MessageRole Role => (Contents == null || Contents.Count == 0) ? MessageRole.AI : MessageRole.USER;
 }
 
 public class Content

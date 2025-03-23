@@ -11,10 +11,6 @@ public partial class Chat:IDisposable
 
     private  SemaphoreSlim semaphore = new SemaphoreSlim(1);
 
-    private string IsLast(ChatMessage message)
-    {
-        return session is null ? "" : session.ChatMessages.LastOrDefault() == message?"text":"";
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,7 +50,13 @@ public partial class Chat:IDisposable
 
     public void Dispose()
     {
-        if(session is not null)
+        if (session is not null)
+        {
+            if(session.ChatMessages.Count!=0)
+                SessionHub.Instance.AddOrUpdateSession(session);
             session.ChatMessages.CollectionChanged -= OnChatMessageCollectionChanged;
+        }
+
+
     }
 }

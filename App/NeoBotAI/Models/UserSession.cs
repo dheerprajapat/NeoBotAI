@@ -1,4 +1,5 @@
-﻿using NeoBotAI.Services;
+﻿using Microsoft.AspNetCore.Components;
+using NeoBotAI.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,8 +10,23 @@ using System.Threading.Tasks;
 
 namespace NeoBotAI.Models;
 
-public record UserSession(string Id, AIService AIService)
+public record UserSession(string Id,string VectorDbName,DateTime TimeStamp)
 {
+    [JsonIgnore]
+    public AIService AIService => AIService.Instance;
+
+    [JsonIgnore]
+    public string? Title
+    {
+        get
+        {
+            if(ChatMessages.Count==0)
+                return null;
+            string? str = ChatMessages.First().Contents?.First().Text;
+            return str?.Substring(0, Math.Min(80, str.Length));
+        }
+    }
+
     public ObservableCollection<ChatMessage> ChatMessages { get; set; } = new ObservableCollection<ChatMessage>();
 
     public async ValueTask<string?> ChatAsync(string question)
@@ -31,7 +47,7 @@ public record UserSession(string Id, AIService AIService)
         return response;
     }
 
-    public async ValueTask<bool> CloseSession()
+    public async ValueTask<bool> CloseSessionAsync()
     {
         return await AIService.CloseSessionAsync(Id);
     }
@@ -40,6 +56,7 @@ public record UserSession(string Id, AIService AIService)
     {
         try
         {
+
         }
         catch
         {
