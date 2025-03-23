@@ -19,7 +19,7 @@ public class AIService
 
     }
 
-    public async ValueTask<Guid?> CreateSessionAsync(string vectorDbName,string chatHistory)
+    public async ValueTask<string?> CreateSessionAsync(string vectorDbName,string chatHistory)
     {
         try
         {
@@ -31,7 +31,7 @@ public class AIService
 
             if(res.IsSuccessStatusCode)
             {
-                return Guid.Parse((await res.Content.ReadFromJsonAsync<string>())!);
+                return await res.Content.ReadFromJsonAsync<string>();
             }
 
             return null;
@@ -42,4 +42,44 @@ public class AIService
         }
     }
 
+    public async ValueTask<string?> ChatAsync(string question, string sessionId)
+    {
+        try
+        {
+            var res = await httpClient.PostAsJsonAsync("/chat", new
+            {
+                question,
+                sessionId
+            });
+
+            if (res.IsSuccessStatusCode)
+            {
+                return await res.Content.ReadAsStringAsync();
+            }
+
+            return null;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public async ValueTask<bool> CloseSessionAsync(string sessionId)
+    {
+        try
+        {
+            var res = await httpClient.GetAsync($"/closeSession/{sessionId}");
+
+            if (res.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

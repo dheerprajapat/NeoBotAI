@@ -1,6 +1,7 @@
 ﻿using BlazorQrCodeScanner.Maui;
 using Microsoft.Extensions.Logging;
 using NeoBotAI.Services;
+using NeoBotAI.Session;
 
 namespace NeoBotAI;
 
@@ -24,6 +25,7 @@ public static class MauiProgram
 #endif
 
 		builder.Services.AddSingleton<AIService>();
+		builder.Services.AddSingleton<SessionManager>();
 
 		return builder.Build();
 	}
