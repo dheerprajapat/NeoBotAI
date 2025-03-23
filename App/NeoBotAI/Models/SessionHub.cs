@@ -104,4 +104,12 @@ public class SessionHub
             
     }
 
+    public void RemoveSession(UserSession session)
+    {
+        if (PersistentSessionStore.SavedSessions.ContainsKey(session.Id))
+        {
+            PersistentSessionStore.SavedSessions.Remove(session.Id);
+        }
+    }
+
 }
