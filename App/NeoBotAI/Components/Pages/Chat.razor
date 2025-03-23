@@ -1,5 +1,6 @@
 ﻿@page "/chat"
 @using System.Collections.Specialized
+@using Markdig
 @inject SessionManager SessionManager
 
 <div>
@@ -20,7 +21,7 @@
 
                             <div class="flex w-full flex-col items-start lg:flex-row lg:justify-between">
                                 <p class="max-w-3xl">
-                                    @chatMessage.Text
+                                   @((MarkupString)(Markdown.ToHtml(chatMessage.Text!)))
                                 </p>
                                 <div class="mt-4 flex flex-row justify-start gap-x-2 text-slate-500 lg:mt-0">
                                     <button class="hover:text-blue-600">

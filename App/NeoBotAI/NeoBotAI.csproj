@@ -63,6 +63,7 @@
     <ItemGroup>
 		<PackageReference Include="BlazorQrCodeScanner" Version="1.0.0.1" />
 		<PackageReference Include="BlazorQrCodeScanner.Maui" Version="1.0.0" />
+		<PackageReference Include="Markdig" Version="0.40.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
