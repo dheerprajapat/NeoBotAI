@@ -13,6 +13,8 @@ public partial class Chat:IAsyncDisposable
 
     private static SemaphoreSlim pageRenderSemaphoreSlim = new SemaphoreSlim(1,1);
 
+    private bool showProgress = false;
+
     protected override async Task OnInitializedAsync()
     {
         if (pageRenderSemaphoreSlim.CurrentCount==0)
@@ -65,6 +67,7 @@ public partial class Chat:IAsyncDisposable
             //reset question 
             var questionCopy = question;
             question = string.Empty;
+            showProgress = true;
             StateHasChanged();
 
             await session.ChatAsync(questionCopy);
@@ -72,6 +75,8 @@ public partial class Chat:IAsyncDisposable
         finally
         {
             chatSemaphore.Release();
+            showProgress = false;
+            StateHasChanged();
         }
     }
 
