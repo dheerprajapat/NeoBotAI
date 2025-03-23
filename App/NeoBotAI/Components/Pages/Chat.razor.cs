@@ -4,9 +4,9 @@ using NeoBotAI.Session;
 
 namespace NeoBotAI.Components.Pages;
 
-public partial class Chat:IDisposable
+public partial class Chat:IAsyncDisposable
 {
-    UserSession? session;
+    private static UserSession? session;
     string question = string.Empty;
 
     private  SemaphoreSlim semaphore = new SemaphoreSlim(1);
@@ -48,15 +48,16 @@ public partial class Chat:IDisposable
         }
     }
 
-    public void Dispose()
+
+    public async ValueTask DisposeAsync()
     {
+
         if (session is not null)
         {
-            if(session.ChatMessages.Count!=0)
+            if (session.ChatMessages.Count != 0)
                 SessionHub.Instance.AddOrUpdateSession(session);
             session.ChatMessages.CollectionChanged -= OnChatMessageCollectionChanged;
+            await session.CloseSessionAsync();
         }
-
-
     }
 }
