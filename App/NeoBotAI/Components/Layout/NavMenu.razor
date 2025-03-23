@@ -1,6 +1,7 @@
 ﻿@inject NavigationManager NavManager
+@inject IJSRuntime Runtime
 
-<ion-tabs>
+<ion-tabs id="ionicTabs">
     @foreach(var navMenuItem in navMenuItems)
     {
         <ion-tab tab="@navMenuItem.TabName">

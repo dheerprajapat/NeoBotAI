@@ -9,17 +9,44 @@ public partial class Chat:IAsyncDisposable
     private static UserSession? session;
     string question = string.Empty;
 
-    private  SemaphoreSlim semaphore = new SemaphoreSlim(1);
+    private SemaphoreSlim chatSemaphore = new SemaphoreSlim(1);
 
+    private static SemaphoreSlim pageRenderSemaphoreSlim = new SemaphoreSlim(1,1);
 
     protected override async Task OnInitializedAsync()
     {
-        session = await SessionManager.CreateSessionAsync("i510.json", "");
-
-        if (session != null)
+        if (pageRenderSemaphoreSlim.CurrentCount==0)
         {
-            session.ChatMessages.CollectionChanged += OnChatMessageCollectionChanged;
+            return;
         }
+
+        try
+        {
+            await pageRenderSemaphoreSlim.WaitAsync();
+
+            session = SessionManager.Current;
+
+            //create a new session
+            if (session == null)
+            {
+                SessionManager.Current = session = await SessionManager.CreateSessionAsync("i510.json", "");
+            }
+            else
+            {
+                SessionManager.Current = session = await SessionManager.ResumeSessionAsync(session);
+            }
+
+            if (session != null)
+            {
+                session.ChatMessages.CollectionChanged += OnChatMessageCollectionChanged;
+            }
+        }
+        finally
+        {
+            pageRenderSemaphoreSlim.Release();
+        }
+
+        StateHasChanged();
     }
 
     void OnChatMessageCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -29,12 +56,12 @@ public partial class Chat:IAsyncDisposable
 
     async Task ChatAsync()
     {
-        if (session == null || string.IsNullOrWhiteSpace(question) || semaphore.CurrentCount==0)
+        if (session == null || string.IsNullOrWhiteSpace(question) || chatSemaphore.CurrentCount==0)
             return;
 
         try
         {
-            await semaphore.WaitAsync();
+            await chatSemaphore.WaitAsync();
             //reset question 
             var questionCopy = question;
             question = string.Empty;
@@ -44,7 +71,7 @@ public partial class Chat:IAsyncDisposable
         }
         finally
         {
-            semaphore.Release();
+            chatSemaphore.Release();
         }
     }
 
@@ -59,5 +86,8 @@ public partial class Chat:IAsyncDisposable
             session.ChatMessages.CollectionChanged -= OnChatMessageCollectionChanged;
             await session.CloseSessionAsync();
         }
+
+        if (pageRenderSemaphoreSlim.CurrentCount == 0)
+            pageRenderSemaphoreSlim.Release();
     }
 }

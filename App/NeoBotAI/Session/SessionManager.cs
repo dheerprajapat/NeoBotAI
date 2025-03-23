@@ -12,6 +12,7 @@ namespace NeoBotAI.Session;
 
 public class SessionManager
 {
+    public UserSession? Current {  get; set; }
     public SessionManager(AIService aIService)
     {
         AIService = aIService;

@@ -13,3 +13,12 @@ window.initRangeSlider = function (dotnet, slider) {
         dotnet.invokeMethodAsync("onChange", detail.value);
     });
 }
+
+window.clickTab = (el)=>
+{
+    let e = document.getElementById(el);
+    if (e == undefined || e == null)
+        return;
+
+    e.click();
+};
