@@ -12,6 +12,8 @@ public partial class Chat:IAsyncDisposable
     private SemaphoreSlim chatSemaphore = new SemaphoreSlim(1);
 
     private static SemaphoreSlim pageRenderSemaphoreSlim = new SemaphoreSlim(1,1);
+    private static SemaphoreSlim pageDisposeSemaphoreSlim = new SemaphoreSlim(1, 1);
+
 
     private bool showProgress = false;
 
@@ -83,16 +85,26 @@ public partial class Chat:IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        if(pageDisposeSemaphoreSlim.CurrentCount == 0) return;
 
-        if (session is not null)
+        await pageDisposeSemaphoreSlim.WaitAsync();
+
+        try
         {
-            if (session.ChatMessages.Count != 0)
-                SessionHub.Instance.AddOrUpdateSession(session);
-            session.ChatMessages.CollectionChanged -= OnChatMessageCollectionChanged;
-            await session.CloseSessionAsync();
-        }
+            if (session is not null)
+            {
+                if (session.ChatMessages.Count != 0)
+                    SessionHub.Instance.AddOrUpdateSession(session);
+                session.ChatMessages.CollectionChanged -= OnChatMessageCollectionChanged;
+                await session.CloseSessionAsync();
+            }
 
-        if (pageRenderSemaphoreSlim.CurrentCount == 0)
-            pageRenderSemaphoreSlim.Release();
+            if (pageRenderSemaphoreSlim.CurrentCount == 0)
+                pageRenderSemaphoreSlim.Release();
+        }
+        finally
+        {
+            pageDisposeSemaphoreSlim.Release();
+        }
     }
 }

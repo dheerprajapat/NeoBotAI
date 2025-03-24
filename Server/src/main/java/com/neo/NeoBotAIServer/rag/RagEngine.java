@@ -7,12 +7,14 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import kotlin.Pair;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +32,7 @@ public class RagEngine
 {
     private static Map<String,InMemoryEmbeddingStore<TextSegment>> embeddingStores;
     private  static  Assistant assistant;
+
 
     public  static CompletableFuture<Boolean> createVectorDatabase()
     {
@@ -74,7 +77,7 @@ public class RagEngine
     }
 
 
-    public  static Pair<Assistant,ChatMemory> createAssistant(String vectorDbName, String history)
+    public  static Pair<Assistant,ChatMemory> createAssistant(String vectorDbName, String history,Boolean useLocalLLM)
     {
         if(embeddingStores == null)
             return null;
@@ -95,9 +98,18 @@ public class RagEngine
         }
 
 
-        ChatLanguageModel model = OllamaChatModel.builder()
+        ChatLanguageModel model =null;
+
+        if(useLocalLLM)
+            model = OllamaChatModel.builder()
                 .baseUrl("http://localhost:11434")
                 .modelName("llama3.1:latest").build();
+        else
+            model = GoogleAiGeminiChatModel.builder()
+                    .apiKey(System.getenv("GEMINI_AI_KEY"))
+                    .modelName("gemini-2.0-flash-lite")
+                    .temperature(0.0)
+                    .build();
 
         assistant = AiServices.builder(Assistant.class)
                 .chatLanguageModel(model)

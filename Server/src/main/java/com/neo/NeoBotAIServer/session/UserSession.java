@@ -34,7 +34,7 @@ public class UserSession
         sessionId = _sessionId;
         vectorDbName = _vectorDbName;
 
-        var result = RagEngine.createAssistant(vectorDbName,history);
+        var result = RagEngine.createAssistant(vectorDbName,history,true);
 
         if(result!=null)
         {
